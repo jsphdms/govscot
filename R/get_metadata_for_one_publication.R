@@ -1,7 +1,7 @@
 #' Scrape metadata for one publication
 #' @importFrom magrittr "%>%"
 
-scrape_metadata_for_one_publication <- function(url = NULL) {
+scrape_publication <- function(url = NULL) {
 
   metadata <- list()
 
