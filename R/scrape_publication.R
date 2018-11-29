@@ -1,3 +1,14 @@
+count_mentions <- function(url = NULL,
+                           pattern = "National Records of Scotland") {
+
+  string_count <- pdftools::pdf_text(url) %>%
+    str_count(pattern = pattern) %>%
+    sum()
+
+  return(string_count)
+
+}
+
 #' Scrape metadata for one publication
 #' @importFrom magrittr "%>%"
 
@@ -12,6 +23,12 @@ scrape_publication <- function(url = NULL,
                                               "Research", "Statistics", "Transport", "Work and skills")) {
 
   publication_html <- xml2::read_html(url)
+
+  documents <- publication_html %>%
+    rvest::html_nodes(".no-icon") %>%
+    html_attr(name = "href") %>%
+    paste0("https://www.gov.scot", .) %>%
+    if (length(.) == 0) NA_character_ else .
 
   metadata <- data.frame(type = publication_html %>%
                            rvest::html_node(".article-header__label") %>%
