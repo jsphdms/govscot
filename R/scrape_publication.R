@@ -1,7 +1,15 @@
 #' Scrape metadata for one publication
 #' @importFrom magrittr "%>%"
 
-scrape_publication <- function(url = NULL, topic_list = NULL) {
+scrape_publication <- function(url = NULL,
+                               topic_list = c("Arts, culture and sport", "Brexit", "Building, planning and design",
+                                              "Business, industry and innovation", "Children and families",
+                                              "Communities and third sector", "Constitution and democracy",
+                                              "Economy", "Education", "Energy", "Environment and climate change",
+                                              "Equality and rights", "Farming and rural", "Health and social care",
+                                              "Housing", "International", "Law and order", "Marine and fisheries",
+                                              "Money and tax", "Public safety and emergencies", "Public sector",
+                                              "Research", "Statistics", "Transport", "Work and skills")) {
 
   publication_html <- xml2::read_html(url)
 
