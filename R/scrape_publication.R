@@ -20,15 +20,18 @@ scrape_publication <- function(url = NULL,
                                               "Equality and rights", "Farming and rural", "Health and social care",
                                               "Housing", "International", "Law and order", "Marine and fisheries",
                                               "Money and tax", "Public safety and emergencies", "Public sector",
-                                              "Research", "Statistics", "Transport", "Work and skills")) {
+                                              "Research", "Statistics", "Transport", "Work and skills"),
+                               pattern = "National Records of Scotland") {
+
+  count_mentions <- limit_rate(count_mentions, rate(n = 1, period = 1))
 
   publication_html <- xml2::read_html(url)
 
-  documents <- publication_html %>%
+  supporting_document_urls <- publication_html %>%
     rvest::html_nodes(".no-icon") %>%
-    html_attr(name = "href") %>%
-    paste0("https://www.gov.scot", .) %>%
-    if (length(.) == 0) NA_character_ else .
+    rvest::html_attr(name = "href")
+
+
 
   metadata <- data.frame(type = publication_html %>%
                            rvest::html_node(".article-header__label") %>%
@@ -49,9 +52,29 @@ scrape_publication <- function(url = NULL,
                          contact = publication_html %>%
                            rvest::html_nodes(".publication-info__contact a") %>%
                            rvest::html_text(trim = TRUE) %>%
-                           ifelse(length(.) == 0, NA_character_, .))
+                           ifelse(length(.) == 0, NA_character_, .),
+                         mentions_web_page = publication_html %>%
+                           rvest::html_text(trim = TRUE) %>%
+                           stringr::str_count(pattern = pattern) %>%
+                           ifelse(length(.) == 0, NA_character_, .),
+                         number_of_supporting_documents = length(supporting_document_urls))
 
+  if (length(supporting_document_urls) == 0) {
 
+    metadata[["number_of_supporting_documents_with_mentions"]] <- 0
+    metadata[["mentions_supporting_documents"]] <- 0
+
+  } else {
+
+    metadata[["number_of_supporting_documents_with_mentions"]] <-
+      supporting_document_urls[supporting_document_urls != 0] %>%
+      length()
+
+    metadata[["mentions_supporting_documents"]] <- supporting_document_urls %>%
+      paste0("https://www.gov.scot", .) %>%
+      sapply(count_mentions, pattern = pattern) %>%
+      sum()
+  }
 
   topics <- publication_html %>%
     rvest::html_nodes(xpath = "//dt[contains(text(),'Part of:')]/following-sibling::dd/a") %>%
