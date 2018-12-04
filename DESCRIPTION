@@ -13,5 +13,6 @@ Imports:
     rvest,
     dplyr,
     magrittr,
-    stringr
+    stringr,
+    lubridate
 RoxygenNote: 6.1.1
