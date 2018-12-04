@@ -57,7 +57,8 @@ scrape_publication <- function(url = NULL,
                            rvest::html_text(trim = TRUE) %>%
                            stringr::str_count(pattern = pattern) %>%
                            ifelse(length(.) == 0, NA_character_, .),
-                         number_of_supporting_documents = length(supporting_document_urls))
+                         number_of_supporting_documents = length(supporting_document_urls),
+                         stringsAsFactors = FALSE)
 
   if (length(supporting_document_urls) == 0) {
 
