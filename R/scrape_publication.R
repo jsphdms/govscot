@@ -65,14 +65,15 @@ scrape_publication <- function(url = NULL,
 
   } else {
 
+    mentions <- supporting_document_urls %>%
+      paste0("https://www.gov.scot", .) %>%
+      sapply(count_mentions, pattern = pattern)
+
     metadata[["number_of_supporting_documents_with_mentions"]] <-
-      supporting_document_urls[supporting_document_urls != 0] %>%
+      mentions[mentions != 0] %>%
       length()
 
-    metadata[["mentions_supporting_documents"]] <- supporting_document_urls %>%
-      paste0("https://www.gov.scot", .) %>%
-      sapply(count_mentions, pattern = pattern) %>%
-      sum()
+    metadata[["mentions_supporting_documents"]] <- sum(mentions)
   }
 
   topics <- publication_html %>%
