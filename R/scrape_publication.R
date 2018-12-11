@@ -2,7 +2,7 @@ count_mentions <- function(url = NULL,
                            pattern = "National Records of Scotland") {
 
   string_count <- pdftools::pdf_text(url) %>%
-    str_count(pattern = pattern) %>%
+    stringr::str_count(pattern = pattern) %>%
     sum()
 
   return(string_count)
@@ -23,7 +23,9 @@ scrape_publication <- function(url = NULL,
                                               "Research", "Statistics", "Transport", "Work and skills"),
                                pattern = "National Records of Scotland") {
 
-  count_mentions <- limit_rate(count_mentions, rate(n = 1, period = 1))
+  force(topic_list)
+
+  count_mentions <- ratelimitr::limit_rate(count_mentions, ratelimitr::rate(n = 1, period = 1))
 
   publication_html <- xml2::read_html(url)
 
@@ -31,9 +33,18 @@ scrape_publication <- function(url = NULL,
     rvest::html_nodes(".no-icon") %>%
     rvest::html_attr(name = "href")
 
-
-
-  metadata <- data.frame(type = publication_html %>%
+  metadata <- data.frame(date_published = publication_html %>%
+                           rvest::html_node(xpath = "//span[contains(text(),'Published:')]/following-sibling::span[1]") %>%
+                           rvest::html_text(trim = TRUE) %>%
+                           ifelse(length(.) == 0, NA, .) %>%
+                           lubridate::dmy(),
+                         title = publication_html %>%
+                           rvest::html_node(".article-header__title") %>%
+                           rvest::html_text(trim = TRUE),
+                         summary = publication_html %>%
+                           rvest::html_node(".leader") %>%
+                           rvest::html_text(trim = TRUE),
+                         type = publication_html %>%
                            rvest::html_node(".article-header__label") %>%
                            rvest::html_text() %>%
                            ifelse(length(.) == 0, NA_character_, .),
