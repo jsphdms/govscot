@@ -86,8 +86,8 @@ scrape_publication <- function(url = NULL,
 
   metadata <- cbind(metadata, topics)
 
+  Sys.sleep(1)
+
   return(metadata)
 
 }
-
-scrape_publication <- ratelimitr::limit_rate(scrape_publication, ratelimitr::rate(n = 1, period = 1))

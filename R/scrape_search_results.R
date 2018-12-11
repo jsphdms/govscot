@@ -13,6 +13,8 @@ scrape_search_results <- function(url = NULL) {
                                    rvest::html_attr(name = "href") %>%
                                    paste0("https://www.gov.scot", .))
 
+  Sys.sleep(1)
+
   return(search_results)
 
 }

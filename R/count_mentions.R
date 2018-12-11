@@ -5,8 +5,8 @@ count_mentions <- function(url = NULL,
     stringr::str_count(pattern = pattern) %>%
     sum()
 
+  Sys.sleep(1)
+
   return(string_count)
 
 }
-
-count_mentions <- ratelimitr::limit_rate(count_mentions, ratelimitr::rate(n = 1, period = 1))
