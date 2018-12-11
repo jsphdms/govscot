@@ -16,3 +16,5 @@ scrape_search_results <- function(url = NULL) {
   return(search_results)
 
 }
+
+scrape_search_results <- ratelimitr::limit_rate(scrape_search_results, ratelimitr::rate(n = 1, period = 1))

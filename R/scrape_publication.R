@@ -1,14 +1,3 @@
-count_mentions <- function(url = NULL,
-                           pattern = "National Records of Scotland") {
-
-  string_count <- pdftools::pdf_text(url) %>%
-    stringr::str_count(pattern = pattern) %>%
-    sum()
-
-  return(string_count)
-
-}
-
 #' Scrape metadata for one publication
 #' @importFrom magrittr "%>%"
 
@@ -24,8 +13,6 @@ scrape_publication <- function(url = NULL,
                                pattern = "National Records of Scotland") {
 
   force(topic_list)
-
-  count_mentions <- ratelimitr::limit_rate(count_mentions, ratelimitr::rate(n = 1, period = 1))
 
   publication_html <- xml2::read_html(url)
 
@@ -102,3 +89,5 @@ scrape_publication <- function(url = NULL,
   return(metadata)
 
 }
+
+scrape_publication <- ratelimitr::limit_rate(scrape_publication, ratelimitr::rate(n = 1, period = 1))
